@@ -3,6 +3,14 @@ import { db } from '@/lib/db'
 
 export async function POST() {
   try {
+    // Check if database is available
+    if (!db) {
+      return NextResponse.json({ 
+        message: 'Demo mode - No database available',
+        demo: true
+      })
+    }
+
     // Create default savings goal
     const existingGoal = await db.savingsGoal.findFirst()
     if (!existingGoal) {

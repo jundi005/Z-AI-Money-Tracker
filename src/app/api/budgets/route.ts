@@ -3,6 +3,11 @@ import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if database is available
+    if (!db) {
+      return NextResponse.json([])
+    }
+
     const { searchParams } = new URL(request.url)
     const month = searchParams.get('month')
 
@@ -34,6 +39,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if database is available
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { category, allocated, month } = body
 

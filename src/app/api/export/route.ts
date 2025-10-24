@@ -3,6 +3,28 @@ import { db } from '@/lib/db'
 
 export async function GET() {
   try {
+    // Check if database is available
+    if (!db) {
+      return NextResponse.json({
+        generatedAt: new Date().toISOString(),
+        period: {
+          start: null,
+          end: null
+        },
+        summary: {
+          totalTransactions: 0,
+          totalIncome: 0,
+          totalExpense: 0,
+          balance: 0,
+          averageTransaction: 0
+        },
+        expensesByCategory: {},
+        incomeByCategory: {},
+        transactions: [],
+        demo: true
+      })
+    }
+
     const transactions = await db.transaction.findMany({
       orderBy: {
         date: 'desc'

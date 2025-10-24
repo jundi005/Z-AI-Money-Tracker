@@ -19,6 +19,15 @@ const defaultCategories = [
 
 export async function GET() {
   try {
+    // Check if database is available
+    if (!db) {
+      // Return default categories only
+      return NextResponse.json(defaultCategories.map(category => ({
+        ...category,
+        transactionCount: 0
+      })))
+    }
+
     // Get custom categories from database
     const customCategories = await db.category.findMany({
       orderBy: {
@@ -29,7 +38,7 @@ export async function GET() {
     // Transform custom categories and get transaction counts
     const transformedCustomCategories = await Promise.all(
       customCategories.map(async (cat) => {
-        const count = await db.transaction.count({
+        const count = await db!.transaction.count({
           where: { category: cat.id }
         })
         return {
@@ -46,7 +55,7 @@ export async function GET() {
     // Get transaction counts for default categories
     const defaultCategoriesWithCounts = await Promise.all(
       defaultCategories.map(async (category) => {
-        const count = await db.transaction.count({
+        const count = await db!.transaction.count({
           where: { category: category.id }
         })
         return {
@@ -71,6 +80,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if database is available
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { name, icon, color } = body
 

@@ -13,7 +13,7 @@ export const db = hasDatabase
     }))
   : null
 
-if (process.env.NODE_ENV !== 'production' && hasDatabase) {
+if (process.env.NODE_ENV !== 'production' && hasDatabase && db) {
   globalForPrisma.prisma = db
 }
 
